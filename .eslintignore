@@ -1,0 +1,13 @@
+build/
+dist/
+node_modules/
+.snapshots/
+*.min.js
+*.css
+*.module.css
+*.svg
+*.png
+*.jpg
+*.d.ts
+.eslint*
+.prettier*

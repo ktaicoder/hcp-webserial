@@ -1,0 +1,41 @@
+{
+  "name": "@ktaicoder/hcp-webserial",
+  "version": "1.0.0",
+  "main": "build/cjs/index.js",
+  "module": "build/es/index.js",
+  "repository": "https://github.com/ktaicoder/hcp-webserial.git",
+  "author": "ktaicoder <ktaicodingblock.dev@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "build": "rimraf build && rollup -c rollup.config.all.js",
+    "build:es": "rimraf build && rollup -c rollup.config.es.js",
+    "build:cjs": "rimraf build && rollup -c rollup.config.cjs.js",
+    "clean": "rimraf build dist",
+    "dist": "rimraf dist && mkdirp dist && yarn build && cp -rf build/cjs/* dist/ && node scripts/dist-package.js",
+    "lint": "eslint --fix \"src/**\" ",
+    "fmt": "prettier --write \"src/**\" "
+  },
+  "devDependencies": {
+    "@rollup/plugin-babel": "^5.3.1",
+    "@rollup/plugin-commonjs": "^22.0.2",
+    "@rollup/plugin-image": "^2.1.1",
+    "@rollup/plugin-node-resolve": "^13.3.0",
+    "@types/w3c-web-serial": "^1.0.2",
+    "eslint": "^8.23.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "mkdirp": "^1.0.4",
+    "prettier": "^2.7.1",
+    "prettier-eslint": "^15.0.1",
+    "rollup": "^2.78.1",
+    "rollup-plugin-typescript2": "^0.33.0",
+    "shelljs": "^0.8.5",
+    "ts-loader": "^9.3.1",
+    "tslib": "^2.4.0",
+    "typescript": "^4.8.2"
+  },
+  "dependencies": {
+    "@ktaicoder/hcp-base": "^0.0.5",
+    "rxjs": "^7.5.6"
+  }
+}
