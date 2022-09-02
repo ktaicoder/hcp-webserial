@@ -67,10 +67,10 @@
   resolved "https://registry.yarnpkg.com/@humanwhocodes/object-schema/-/object-schema-1.2.1.tgz#b520529ec21d8e5945a1851dfd1c32e94e39ff45"
   integrity sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==
 
-"@ktaicoder/hcp-base@^1.0.3":
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/@ktaicoder/hcp-base/-/hcp-base-1.0.3.tgz#5214db17aad2ff49ec230cf47b9c9a78b3d877fe"
-  integrity sha512-oAIYW/rQTXbhWLiex3yjVKgwWjFoLaF1l+u9H4dGXXFTcjzmC3+qPCDXTeKXmAZZUCrJ5J25wxzeAo2fk1MySQ==
+"@ktaicoder/hcp-base@^1.0.4":
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/@ktaicoder/hcp-base/-/hcp-base-1.0.4.tgz#adc27fb496b2a3468959ebf9064d89c3da373d6e"
+  integrity sha512-vBT2/FLFKdpH9Xr+JywZT87kCkSca4Jws+JDGMt7ylP4js0VmU0ZQjU2CwIlfsHZ5ucXmkpvKEwc3mHRpq0ZSg==
 
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
