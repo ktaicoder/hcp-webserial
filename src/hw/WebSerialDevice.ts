@@ -156,8 +156,12 @@ export class WebSerialDevice implements IDevice {
      */
     write = async (value: Uint8Array): Promise<void> => {
         const port = this.port_
-        if (!port || !port.writable) {
-            console.log('port is not opened')
+        if (!port) {
+            console.log('port is not bound')
+            return
+        }
+        if (!port.writable) {
+            console.log('port is not writable')
             return
         }
 
@@ -204,7 +208,7 @@ export class WebSerialDevice implements IDevice {
 
         if (this.writer_) {
             if (!this.writer_.closed) {
-                this.writer_.close()
+                await this.writer_.close()
             }
             this.writer_ = undefined
         }
@@ -215,7 +219,7 @@ export class WebSerialDevice implements IDevice {
         }
 
         if (this.port_) {
-            this.port_.close().catch(() => {
+            await this.port_.close().catch(() => {
                 /* ignore error */
             })
             this.port_ = undefined
