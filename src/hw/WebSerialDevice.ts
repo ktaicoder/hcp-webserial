@@ -77,12 +77,22 @@ export class WebSerialDevice implements IDevice {
         return this.deviceState$.value === 'opened'
     }
 
+    private closeAndWait_ = async () => {
+        if (this.deviceState$.value === 'closed') return
+        if (this.deviceState$.value !== 'closing') {
+            this.close()
+        }
+        await firstValueFrom(this.deviceState$.pipe(filter((it) => it === 'closed')))
+    }
+
     /**
      * 디바이스 열기
      * implement IDevice
      */
     open = async (port: SerialPort, options: SerialOptions): Promise<void> => {
         console.log('WebSerialDevice.open', options)
+        await this.closeAndWait_()
+
         this.deviceState$.next('opening')
 
         if (!port.readable) {
