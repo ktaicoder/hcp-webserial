@@ -140,7 +140,7 @@ export class WebSerialDevice implements IDevice {
                 continue
             }
 
-            if (this.DEBUG) console.log('SerialPortManager.startReadLoop_() locked reader')
+            if (this.DEBUG) console.log('WebSerialDevice.startReadLoop_() locked reader')
             const reader = this.port_.readable.getReader()
             this.reader_ = reader
             try {
@@ -158,7 +158,7 @@ export class WebSerialDevice implements IDevice {
                 // Handle non-fatal
                 console.info('ignore error', err)
             } finally {
-                if (this.DEBUG) console.log('SerialPortManager.startReadLoop_() reader.releaseLock()')
+                if (this.DEBUG) console.log('WebSerialDevice.startReadLoop_() reader.releaseLock()')
                 reader.releaseLock()
                 this.reader_ = undefined
             }
@@ -175,16 +175,16 @@ export class WebSerialDevice implements IDevice {
     write = async (value: Uint8Array): Promise<void> => {
         const port = this.port_
         if (!port) {
-            console.log('port is not bound')
+            console.warn('WebSerialDevice.write() : port is not bound')
             return
         }
         if (!port.writable) {
-            console.log('port is not writable')
+            console.warn('WebSerialDevice.write() : port is not writable')
             return
         }
 
         if (port.writable.locked) {
-            console.log('port is locked')
+            console.warn('WebSerialDevice.write() : port is locked')
             return
         }
         const writer = port.writable.getWriter()
@@ -201,6 +201,7 @@ export class WebSerialDevice implements IDevice {
      * implement IDevice
      */
     close = async () => {
+        if (this.DEBUG) console.log('WebSerialDevice.close() currentState=' + this.deviceState$.value)
         if (this.deviceState$.value === 'closed') {
             console.log('ignore close, already closed')
             return
@@ -212,37 +213,40 @@ export class WebSerialDevice implements IDevice {
         }
 
         this.deviceState$.next('closing')
-        if (this.reader_) {
-            await this.reader_.cancel()
-            this.reader_ = undefined
-        }
-
-        if (this.readLoopPromise_) {
-            await this.readLoopPromise_.catch(() => {
-                /* ignore error */
-            })
-            this.readLoopPromise_ = undefined
-        }
-
-        if (this.writer_) {
-            if (!this.writer_.closed) {
-                await this.writer_.close()
+        try {
+            if (this.reader_) {
+                await this.reader_.cancel()
+                this.reader_ = undefined
             }
-            this.writer_ = undefined
-        }
 
-        if (this.writablePromise_) {
-            await this.writablePromise_
-            this.writablePromise_ = undefined
-        }
+            if (this.readLoopPromise_) {
+                await this.readLoopPromise_.catch(() => {
+                    /* ignore error */
+                })
+                this.readLoopPromise_ = undefined
+            }
 
-        if (this.port_) {
-            await this.port_.close().catch(() => {
-                /* ignore error */
-            })
-            this.port_ = undefined
-        }
+            if (this.writer_) {
+                if (!this.writer_.closed) {
+                    await this.writer_.close()
+                }
+                this.writer_ = undefined
+            }
 
-        this.deviceState$.next('closed')
+            if (this.writablePromise_) {
+                await this.writablePromise_
+                this.writablePromise_ = undefined
+            }
+
+            if (this.port_) {
+                await this.port_.close().catch(() => {
+                    /* ignore error */
+                })
+                this.port_ = undefined
+            }
+        } finally {
+            if (this.DEBUG) console.log('WebSerialDevice closed')
+            this.deviceState$.next('closed')
+        }
     }
 }
