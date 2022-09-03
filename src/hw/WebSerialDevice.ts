@@ -195,7 +195,7 @@ export class WebSerialDevice implements IDevice {
 
         this.deviceState$.next('closing')
         if (this.reader_) {
-            this.reader_.cancel()
+            await this.reader_.cancel()
             this.reader_ = undefined
         }
 
