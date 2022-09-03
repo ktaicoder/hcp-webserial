@@ -13,6 +13,8 @@ import {
 import { BufferTimestamped, HwDeviceState, IDevice } from '@ktaicoder/hcp-base'
 
 export class WebSerialDevice implements IDevice {
+    DEBUG = false
+
     private deviceState$ = new BehaviorSubject<HwDeviceState>('closed')
 
     private receivedData$ = new Subject<BufferTimestamped>()
@@ -80,6 +82,7 @@ export class WebSerialDevice implements IDevice {
     private closeAndWait_ = async () => {
         if (this.deviceState$.value === 'closed') return
         if (this.deviceState$.value !== 'closing') {
+            if (this.DEBUG) console.log('WebSerialDevice.closeAndWait_()')
             this.close()
         }
         await firstValueFrom(this.deviceState$.pipe(filter((it) => it === 'closed')))
@@ -90,13 +93,14 @@ export class WebSerialDevice implements IDevice {
      * implement IDevice
      */
     open = async (port: SerialPort, options: SerialOptions): Promise<void> => {
-        console.log('WebSerialDevice.open', options)
+        if (this.DEBUG) console.log('WebSerialDevice.open()', options)
         await this.closeAndWait_()
-
+        if (this.DEBUG) console.log('WebSerialDevice.open() opening')
         this.deviceState$.next('opening')
 
         if (!port.readable) {
             try {
+                if (this.DEBUG) console.log('WebSerialDevice.open() : port.open() called')
                 await port.open(options)
             } catch (err) {
                 console.log(err)
@@ -104,6 +108,7 @@ export class WebSerialDevice implements IDevice {
         }
 
         if (!port.readable) {
+            console.warn('WebSerialDevice.open() : port.open() failed, port is not readable')
             this.deviceState$.next('closed')
             return
         }
@@ -112,6 +117,7 @@ export class WebSerialDevice implements IDevice {
     }
 
     private onOpened_ = (port: SerialPort) => {
+        if (this.DEBUG) console.debug('WebSerialDevice.onOpened_()')
         this.port_ = port
         this.deviceState$.next('opened')
         this.readLoopPromise_ = this.startReadLoop_()
@@ -119,11 +125,22 @@ export class WebSerialDevice implements IDevice {
 
     private startReadLoop_ = async () => {
         while (this.deviceState$.value === 'opened') {
+            if (this.DEBUG) {
+                if (!this.port_) {
+                    console.warn('WebSerialDevice.startReadLoop_() this.port_ is null')
+                } else if (!this.port_.readable) {
+                    console.warn('WebSerialDevice.startReadLoop_() this.port_.readable is null')
+                }
+            }
+
             if (!this.port_ || !this.port_.readable) {
-                await new Promise((resolve) => setTimeout(resolve, 100))
+                await new Promise((resolve) => setTimeout(resolve, 100)).catch(() => {
+                    /*  ignore */
+                })
                 continue
             }
-            console.log('SerialPortManager.startReadLoop_')
+
+            if (this.DEBUG) console.log('SerialPortManager.startReadLoop_() locked reader')
             const reader = this.port_.readable.getReader()
             this.reader_ = reader
             try {
@@ -141,6 +158,7 @@ export class WebSerialDevice implements IDevice {
                 // Handle non-fatal
                 console.info('ignore error', err)
             } finally {
+                if (this.DEBUG) console.log('SerialPortManager.startReadLoop_() reader.releaseLock()')
                 reader.releaseLock()
                 this.reader_ = undefined
             }
