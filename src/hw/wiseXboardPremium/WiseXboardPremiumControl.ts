@@ -216,21 +216,23 @@ export class WiseXboardPremiumControl implements IHwControl {
      * 아날로그 핀 읽기
      * 일곱개의 핀값을 모두 가져온다
      */
-    async analogReadP(): Promise<number[]> {
+    async analogReadP(pinNum: number): Promise<number> {
         if (DEBUG) console.log('analogReadP()')
         // [pin1 ~ pin7]
-        return this._read7Retry()
+        const values = await this._read7Retry()
+        return values[pinNum - 1]
     }
 
     /**
      * 디지털 핀 읽기
      * 일곱개의 핀값을 모두 가져온다
      */
-    async digitalReadP(): Promise<number[]> {
+    async digitalReadP(pinNum: number): Promise<number> {
         if (DEBUG) console.log('digitalReadP()')
         // [pin1 ~ pin7]
         const values = await this._read7Retry()
-        return values.map((it) => (it > 100 ? 1 : 0))
+        const v = values[pinNum - 1]
+        return v > 100 ? 1 : 0
     }
 
     /**

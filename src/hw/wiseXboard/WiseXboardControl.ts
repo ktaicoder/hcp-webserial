@@ -50,16 +50,16 @@ export class WiseXboardControl implements IHwControl {
         await this.device_.write(new Uint8Array(pkt))
     }
 
-    analogRead = async (ctx: any): Promise<number[]> => {
+    analogRead = async (ctx: any, pinNum: number): Promise<number> => {
         const values = await this.readNext_(ctx)
         // [pin1 ~ pin5]
-        return new Array(5).fill(0).map((_, i) => values[i] ?? 0)
+        return values[pinNum - 1] ?? 0
     }
 
-    digitalRead = async (ctx: any): Promise<number[]> => {
-        const values = await this.analogRead(ctx)
+    digitalRead = async (ctx: any, pinNum: number): Promise<number> => {
+        const value = await this.analogRead(ctx, pinNum)
         // [pin1 ~ pin5]
-        return values.map((v) => (v > 100 ? 1 : 0))
+        return value > 100 ? 1 : 0
     }
 
     digitalWrite = async (ctx: any, pin: number, value: number): Promise<void> => {
