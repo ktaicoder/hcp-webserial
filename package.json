@@ -1,6 +1,6 @@
 {
   "name": "@ktaicoder/hcp-webserial",
-  "version": "1.0.20",
+  "version": "1.0.21",
   "main": "build/cjs/index.js",
   "module": "build/es/index.js",
   "repository": "https://github.com/ktaicoder/hcp-webserial.git",
