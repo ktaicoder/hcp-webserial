@@ -117,6 +117,7 @@ export class WiseXboardPremiumControl implements IHwControl {
         buf[buf.length - 1] = cksum
         await this.device_.write(new Uint8Array(buf))
     }
+
     /**
      * DC 모터1 속도 설정
      */
